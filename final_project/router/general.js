@@ -22,7 +22,7 @@ public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
   const isbn = req.params.isbn;
   res.send(books[isbn]);
-  return res.status(300).json({message: "Yet to be implemented"});
+  return res.status(200).json({message: "book returned."});
  });
   
 // Get book details based on author
