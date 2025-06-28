@@ -42,74 +42,122 @@ public_users.post("/register", (req,res) => {
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
   //Write your code here
-  res.send(JSON.stringify(books,null,4));
-  return res.status(200).json({message: "Book list returned."});
+  //res.send(JSON.stringify(books,null,4));
+  //return res.status(200).json({message: "Book list returned."});
+  new Promise((resolve, reject) => {
+    // In a real scenario, this would be a database call or API fetch
+    if (books) { // Assuming 'books' is always available in this context
+        resolve(books);
+    } else {
+        reject("Books data not found.");
+    }
+})
+.then(data => {
+    // Success callback
+    res.status(200).json({ books: data, message: "Book list returned." });
+})
+.catch(error => {
+    // Error callback
+    res.status(500).json({ message: "Failed to retrieve book list.", error: error });
+});
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
   const isbn = req.params.isbn;
-  res.send(books[isbn]);
-  return res.status(200).json({message: "book returned."});
- });
+  //res.send(books[isbn]);
+  //return res.status(200).json({message: "book returned."});
+  // Simulate an asynchronous lookup for the book by ISBN
+  new Promise((resolve, reject) => {
+    setTimeout(() => { // Simulate a small delay for asynchronous behavior
+        if (books[isbn]) {
+            resolve(books[isbn]); // Resolve with the book data
+        } else {
+            reject("Book not found for the given ISBN."); // Reject if book not found
+        }
+    }, 50); // 50ms delay
+})
+.then(book => {
+    // If the promise resolves (book found)
+    res.status(200).json({ book: book, message: "Book details returned successfully." });
+})
+.catch(error => {
+    // If the promise rejects (book not found)
+    res.status(404).json({ message: error }); // Send 404 with the error message
+});
+});
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
-    const requestedAuthor = req.params.author;
-    const matchingBooks = [];
+  const requestedAuthor = req.params.author;
 
-    // Hint 1: Obtain all the keys for the ‘books’ object.
-    const bookKeys = Object.keys(books);
+  new Promise((resolve, reject) => {
+      setTimeout(() => { // Simulate async operation
+          const matchingBooks = [];
+          const bookKeys = Object.keys(books);
 
-    // Hint 2: Iterate through the ‘books’ array & check the author matches
-    // the one provided in the request parameters.
-    for (let i = 0; i < bookKeys.length; i++) {
-        const bookKey = bookKeys[i];
-        const book = books[bookKey];
+          for (let i = 0; i < bookKeys.length; i++) {
+              const bookKey = bookKeys[i];
+              const book = books[bookKey];
 
-        // Case-insensitive comparison for author names
-        if (book.author.toLowerCase() === requestedAuthor.toLowerCase()) {
-            matchingBooks.push(book);
-        }
-    }
+              if (book.author.toLowerCase() === requestedAuthor.toLowerCase()) {
+                  matchingBooks.push(book);
+              }
+          }
 
-    if (matchingBooks.length > 0) {
-        return res.status(200).json({ booksbyauthor: matchingBooks });
-    } else {
-        return res.status(404).json({ message: "No books found for this author." });
-    }
-  //return res.status(300).json({message: "Yet to be implemented"});
+          if (matchingBooks.length > 0) {
+              resolve(matchingBooks); // Resolve with the list of matching books
+          } else {
+              reject("No books found for this author."); // Reject if no books match
+          }
+      }, 50); // Simulate a small delay
+  })
+  .then(booksbyauthor => {
+      // If the promise resolves (books found)
+      res.status(200).json({ booksbyauthor: booksbyauthor, message: "Books by author returned successfully." });
+  })
+  .catch(error => {
+      // If the promise rejects (no books found for author)
+      res.status(404).json({ message: error }); // Send 404 with the error message
+  });
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
-    const requestedTitle = req.params.title;
-    const matchingBooks = [];
+  const requestedTitle = req.params.title;
 
-    // Hint 1: Obtain all the keys for the ‘books’ object.
-    const bookKeys = Object.keys(books);
+  new Promise((resolve, reject) => {
+      setTimeout(() => { // Simulate async operation
+          const matchingBooks = [];
+          const bookKeys = Object.keys(books);
 
-    // Hint 2: Iterate through the ‘books’ array & check the title matches
-    // the one provided in the request parameters.
-    for (let i = 0; i < bookKeys.length; i++) {
-        const bookKey = bookKeys[i];
-        const book = books[bookKey];
+          for (let i = 0; i < bookKeys.length; i++) {
+              const bookKey = bookKeys[i];
+              const book = books[bookKey];
 
-        // Case-insensitive comparison for author names
-        if (book.title.toLowerCase() === requestedTitle.toLowerCase()) {
-            matchingBooks.push(book);
-        }
-    }
+              if (book.title.toLowerCase() === requestedTitle.toLowerCase()) {
+                  matchingBooks.push(book);
+              }
+          }
 
-    if (matchingBooks.length > 0) {
-        return res.status(200).json({ booksbytitle: matchingBooks });
-    } else {
-        return res.status(404).json({ message: "No books found for this title." });
-    }
-  //return res.status(300).json({message: "Yet to be implemented"});
+          if (matchingBooks.length > 0) {
+              resolve(matchingBooks); // Resolve with the list of matching books
+          } else {
+              reject("No books found for this title."); // Reject if no books match
+          }
+      }, 50); // Simulate a small delay
+  })
+  .then(booksbytitle => {
+      // If the promise resolves (books found)
+      res.status(200).json({ booksbytitle: booksbytitle, message: "Books by title returned successfully." });
+  })
+  .catch(error => {
+      // If the promise rejects (no books found for title)
+      res.status(404).json({ message: error }); // Send 404 with the error message
+  });
 });
 
 //  Get book review
